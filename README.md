@@ -94,3 +94,9 @@ drop-down/search, showcasing which parties they have donated and what amount ind
 Apart from 1e4 and 1e5, you can also display the Pie chart depicting the total amount of donations to all the parties.
 
 ![alt text](images/18.png)
+
+## Questions 2, 3 and 4
+
+I done these questions and included the screenshots above.
+
+For questions 4, I created this repo and added this `README.md` file.
