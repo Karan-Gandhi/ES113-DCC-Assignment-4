@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
@@ -11,6 +7,11 @@
       crossorigin="anonymous"
     />
 
+    <style>
+      .main-container {
+        padding: 15px 30px;
+      }
+    </style>
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -26,14 +27,7 @@
       integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
       crossorigin="anonymous"
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-sankey"></script>
-
-    <style>
-      .main-container {
-        padding: 15px 30px;
-      }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   </head>
 
   <body>
@@ -76,92 +70,81 @@
         </ul>
       </div>
     </nav>
-
     <div>
       <div class="main-container">
-        <h1>Company donations</h1>
-        <div>Please enter the name of the company to find the companies which that parties they donated to</div>
+        <h1>All donation shares</h1>
+      </div>
+      <div>
+        <center>
+          <button id="download-btn" class="btn btn-success">Download</button>
+        </center>
       </div>
 
-      <hr />
-      <div class="main-container">
-        <form action="/donations/result" method="POST">
-          <label>
-            <b>Please enter the name of the company</b>
-            <input type="text" name="Company_Name" />
-          </label>
-          <input type="submit" value="Submit" class="btn btn-dark" />
-        </form>
-
-        {%if result%}
+      <div>
         <div>
-          <b>Showing results for: {{companyname}}. Combined Amount donated by the company {{amt[0][0]}} rupees </b>
-        </div>
-
-        <div style="display: flex">
-          <div class="chart-container">
-            <div class="w-27 p-3">
-              <table class="table table-striped mx-auto">
-                <thead>
-                  <tr>
-                    <th scope="col">Party Name</th>
-                    <th scope="col">Total value of Bonds donated</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {%for item in result%}
-                  <tr>
-                    {%for cell in item%}
-                    <td>{{cell}}</td>
-                    {%endfor%}
-                  </tr>
-                  {%endfor%}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div
-            class="chart-container"
-            style="display: flex; flex-direction: column; gap: 20px; width: -webkit-fill-available"
-          >
-            <canvas id="companies-donations"></canvas>
-            <button id="dwnld" class="btn btn-success">Download</button>
-          </div>
+          <canvas id="chart"></canvas>
         </div>
       </div>
     </div>
 
     <script>
-      const download = (name) => {
+      const download = name => {
         const imagelink = document.createElement("a");
         const canvas = document.getElementById(name);
         console.log(canvas);
         imagelink.download = name + ".png";
         imagelink.href = canvas.toDataURL("image/png", 1);
         imagelink.click();
-      }
+      };
 
-      let got_data = {{result|tojson}};
-      let companyname = {{companyname|tojson}};
+      document.getElementById("download-btn").addEventListener("click", e => {
+        download("chart");
+      });
 
-      new Chart("companies-donations", {
-        type: "sankey",
+      let got_data = {{data|tojson}};
+      const cc = [
+        "#e6194b",
+        "#3cb44b",
+        "#ffe119",
+        "#4363d8",
+        "#f58231",
+        "#911eb4",
+        "#46f0f0",
+        "#f032e6",
+        "#bcf60c",
+        "#fabebe",
+        "#008080",
+        "#e6beff",
+        "#9a6324",
+        "#fffac8",
+        "#800000",
+        "#aaffc3",
+        "#808000",
+        "#ffd8b1",
+        "#000075",
+        "#808080",
+        "#ffffff",
+        "#000000",
+        "#361d32",
+        "#543c52",
+        "#f55951",
+        "#edd2cb",
+        "#f1e8e6",
+      ];
+
+      new Chart("chart", {
+        type: "pie",
         data: {
+          labels: got_data.map(item => item[0]),
           datasets: [
             {
-              backgroundColor: "#f54290",
-              borderColor: "#FFFFFF",
-              data: got_data.map(item => ({ from: companyname, to: item[0], flow: item[1] / 1 })),
+              data: got_data.map(item => item[1]),
+              hoverOffset: 5,
+              backgroundColor: cc,
             },
           ],
         },
       });
-
-      document.getElementById("dwnld").addEventListener("click", e => {
-        download("companies-donations");
-      });
     </script>
-    {% endif %}
   </body>
 </html>

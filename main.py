@@ -115,19 +115,14 @@ def company_donations_result():
     
     return render_template("donations.html", result=data, companyname=request.form["Company_Name"], amt=amt)
 
+@app.route("/all_donations")
+def total_donations_pie():
+   cursor = mysql.connection.cursor()
+   cursor.execute("select Name_of_the_Political_Party, sum(Denominations) from encashed group by Name_of_the_Political_Party")
+   data = cursor.fetchall()
+   cursor.close()
 
-
-# @app.route("/total_donations_pie")
-# def total_donations_pie():
-#    cursor = mysql.connection.cursor()
-
-#    cursor.execute("select Name_of_the_Political_Party, sum(Denominations) from encashed group by Name_of_the_Political_Party")
-
-#    data = cursor.fetchall()
-
-#    cursor.close()
-
-#    return render_template("total_donations_pie.html", result = data)
+   return render_template("all_donations.html", data=data)
 
 
 if __name__ == "__main__":
