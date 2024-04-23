@@ -97,6 +97,6 @@ Apart from 1e4 and 1e5, you can also display the Pie chart depicting the total a
 
 ## Questions 2, 3 and 4
 
-I done these questions and included the screenshots above.
+I have done these questions and included the screenshots above.
 
 For questions 4, I created this repo and added this `README.md` file.
