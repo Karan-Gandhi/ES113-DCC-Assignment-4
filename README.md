@@ -5,7 +5,7 @@ This is my submisstion for Assignment 4 of the course: ES 113.
 ## Running this project.
 
 - First clone this repo.
-- First you'll have to install all the python packages that are there in `requirements.txt`
+- First you'll have to install all the python packages that are there in `requirements.txt`. Make sure that all the packages are installed.
 - After that, you'll need to have MySQL and MySQL workbench installed on your computer.
 - Once all the packages are installed open MySQL workbench and create a schema named: `dccassignment4`
 - After that import the sqldump file into that new schema which you created. The sql dump file is present in `data/sqldump.sql` file.
