@@ -55,7 +55,7 @@ def company_purchases():
 def comapany_purchases_result():
     cursor = mysql.connection.cursor()
     cn = request.form["Company_Name"]
-    data = cursor.execute(f"select year(STR_TO_DATE(Date_of_Purchase, '%d/%M/%Y')) as Purchase_Year, sum(Denominations) as Total_Bond_Value, count(Denominations) as Noofbonds from purchased where Name_of_the_Purchaser = '{cn}' group by Purchase_Year;")
+    data = cursor.execute(f"select year(str_to_date(Date_of_Purchase, '%d/%M/%Y')) as year, sum(Denominations) as value, count(Denominations) as total from purchased where Name_of_the_Purchaser = '{cn}' group by year;")
     data = cursor.fetchall()
     cursor.close()
     if len(data) == 0:
@@ -70,12 +70,64 @@ def party_encashment_year():
 def party_encashment_result():
     cursor = mysql.connection.cursor()
     pn = request.form["Party_Name"]
-    cursor.execute(f"select year(STR_TO_DATE(Date_of_Encashment, '%d/%M/%Y')) as Encashed_Year, sum(Denominations) as Total_Bond_Value, count(Denominations) as Noofbonds from encashed where Name_of_the_Political_Party = '{pn}' group by Encashed_Year;")
+    cursor.execute(f"select year(STR_TO_DATE(Date_of_Encashment, '%d/%M/%Y')) as year, sum(Denominations) as value, count(Denominations) as total from encashed where Name_of_the_Political_Party = '{pn}' group by year;")
     data = cursor.fetchall()
     cursor.close()
     if len(data) == 0:
         data = "none"
     return render_template("party_encashments.html", result=data, partyname=request.form["Party_Name"])
+
+@app.route("/donations_recieved")
+def party_donations():
+   return render_template("donations_recieved.html")
+
+@app.route("/donations_recieved/result", methods=["POST"])
+def party_donations_result():
+    pn = request.form["Party_Name"]
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"select Name_of_the_Purchaser, sum(encashed.Denominations) as amt from encashed join purchased on (encashed.Prefix, encashed.Bond_Number) = (purchased.Prefix, purchased.Bond_Number) where Name_of_the_Political_Party = '{pn}' group by Name_of_the_Purchaser")
+    data = cursor.fetchall()
+    cursor.close()
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"select sum(encashed.Denominations) from encashed join purchased on (encashed.Prefix,encashed.Bond_Number) = (purchased.Prefix, purchased.Bond_Number) where Name_of_the_Political_Party = '{pn}'")
+    amt = cursor.fetchall() 
+    cursor.close()
+
+    return render_template("donations_recieved.html", result=data, partyname=request.form["Party_Name"], amt=amt)
+
+@app.route("/donations")
+def company_donations():
+   return render_template("donations.html")
+
+@app.route("/donations/result", methods=["POST"])
+def company_donations_result():
+    cn = request.form["Company_Name"]
+    cursor = mysql.connection.cursor()    
+    cursor.execute(f"select Name_of_the_Political_Party, sum(encashed.Denominations) as amt from encashed join purchased on (encashed.Prefix, encashed.Bond_Number) = (purchased.Prefix, purchased.Bond_Number) where Name_of_the_Purchaser = '{cn}' group by Name_of_the_Political_Party")
+    data = cursor.fetchall()
+    cursor.close()
+    
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"select sum(encashed.Denominations) as amt from encashed join purchased on (encashed.Prefix, encashed.Bond_Number) = (purchased.Prefix, purchased.Bond_Number) where Name_of_the_Purchaser = '{cn}' ")
+    amt = cursor.fetchall()
+    cursor.close()
+    
+    return render_template("donations.html", result=data, companyname=request.form["Company_Name"], amt=amt)
+
+
+
+# @app.route("/total_donations_pie")
+# def total_donations_pie():
+#    cursor = mysql.connection.cursor()
+
+#    cursor.execute("select Name_of_the_Political_Party, sum(Denominations) from encashed group by Name_of_the_Political_Party")
+
+#    data = cursor.fetchall()
+
+#    cursor.close()
+
+#    return render_template("total_donations_pie.html", result = data)
 
 
 if __name__ == "__main__":

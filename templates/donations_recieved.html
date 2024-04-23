@@ -26,18 +26,12 @@
       integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
       crossorigin="anonymous"
     ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-sankey"></script>
 
     <style>
-      .chart-container {
-        display: flex;
-      }
       .main-container {
         padding: 15px 30px;
-      }
-      .chart-div {
-        display: flex;
-        flex-direction: column;
       }
     </style>
   </head>
@@ -76,111 +70,91 @@
 
     <div>
       <div class="main-container">
-        <h1>Search for company purchases over years</h1>
-        <div>Please enter the name of the company/individual to search for their purchases over the years</div>
+        <h1>Party donations</h1>
+        <div>Please enter the name of the party to find the companies that donated to that party</div>
       </div>
-      <hr />
 
+      <hr />
       <div class="main-container">
-        <form action="/company_purchases/result" method="POST">
+        <form action="/donations_recieved/result" method="POST">
           <label>
-            <span>Enter the name of the company or Individual you wanna search for: </span>
-            <input type="text" name="Company_Name" placeholder="Search Query" />
+            <b>Please enter the name of the party</b>
+            <input type="text" name="Party_Name" />
           </label>
           <input type="submit" value="Submit" class="btn btn-dark" />
         </form>
 
         {%if result%}
-        <b>Showing results for company/individual name: {{companyname}}</b>
-        <div style="display: flex; justify-content: space-between">
-          <div class="w-25 p-3">
-            <table class="table table-striped mx-auto">
-              <thead>
-                <tr>
-                  <th scope="col">Year</th>
-                  <th scope="col">Total value of Bonds</th>
-                  <th scope="col">Number of bonds</th>
-                </tr>
-              </thead>
-              {%if result == "none"%}
-              <tr>
-                <td colspan="5" style="text-align: center">No Data Found</td>
-              </tr>
-              {%else%}
-              <tbody>
-                {%for item in result%}
-                <tr>
-                  {%for cell in item%}
-                  <td>{{cell}}</td>
+        <div>
+          <b>Showing results for: {{partyname}}.</b>
+          <b> {%if amt[0][0] != None %} Combined Amount donated by Companies to the Party: {{amt[0][0]}} rupees </b>
+          {%endif%}
+        </div>
+
+        <div style="display: flex">
+          <div class="chart-container">
+            <div class="w-27 p-3">
+              <table class="table table-striped mx-auto">
+                <thead>
+                  <tr>
+                    <th scope="col">Company/Individual Name</th>
+                    <th scope="col">Total value of Bonds donated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {%for item in result%}
+                  <tr>
+                    {%for cell in item%}
+                    <td>{{cell}}</td>
+                    {%endfor%}
+                  </tr>
                   {%endfor%}
-                </tr>
-                {%endfor%}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="chart-div" style="width: 650px; height: 650px">
-            <canvas id="no-of-bonds"></canvas>
-            <button id="no-of-bonds-btn" class="btn btn-success">Download</button>
-          </div>
-
-          <div class="chart-div" style="width: 650px; height: 650px">
-            <canvas id="total-bond-value"></canvas>
-            <button id="total-bond-value-btn" class="btn btn-success">Download</button>
+          <div
+            class="chart-container"
+            style="display: flex; flex-direction: column; gap: 20px; width: -webkit-fill-available"
+          >
+            <canvas id="party-donations"></canvas>
+            <button id="dwnld" class="btn btn-success">Download</button>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      const download = name => {
+      const download = (name) => {
         const imagelink = document.createElement("a");
         const canvas = document.getElementById(name);
+        console.log(canvas);
         imagelink.download = name + ".png";
         imagelink.href = canvas.toDataURL("image/png", 1);
         imagelink.click();
-      };
-
-      document.getElementById("no-of-bonds-btn").addEventListener("click", () => {
-        download("no-of-bonds");
-      });
-
-      document.getElementById("total-bond-value-btn").addEventListener("click", () => {
-        download("total-bond-value");
-      });
+      }
 
       let got_data = {{result|tojson}};
+      let partyname = {{partyname|tojson}};
 
-      new Chart("no-of-bonds", {
-        type: "bar",
+      new Chart("party-donations", {
+        type: "sankey",
         data: {
-          labels: got_data.map(e => e[0]),
           datasets: [
             {
-              label: "Number of Bonds purchased",
-              backgroundColor: "#26A69A",
+              backgroundColor: "#f54290",
               borderColor: "#FFFFFF",
-              data: got_data.map(e => e[1]),
+              data: got_data.map(item => ({ from: item[0], to: partyname, flow: item[1] / 1 })),
             },
           ],
         },
       });
 
-      new Chart("total-bond-value", {
-        type: "bar",
-        data: {
-          labels: got_data.map(e => e[0]),
-          datasets: [
-            {
-              label: "Total Bond Value (in Rupees)",
-              backgroundColor: "#5C6BC0",
-              borderColor: "#FFFFFF",
-              data: got_data.map(e => e[1]),
-            },
-          ],
-        },
+      document.getElementById("dwnld").addEventListener("click", e => {
+        download("party-donations");
       });
     </script>
-    {%endif%} {%endif%}
+    {% endif %}
   </body>
 </html>

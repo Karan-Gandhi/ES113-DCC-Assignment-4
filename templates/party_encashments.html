@@ -150,18 +150,18 @@
         download("total-bond-value");
       });
 
-      let iter = {{result|tojson}};
+      let got_data = {{result|tojson}};
 
       new Chart("no-of-bonds", {
         type: "bar",
         data: {
-          labels: iter.map(e => e[0]),
+          labels: got_data.map(e => e[0]),
           datasets: [
             {
               label: "Number of Bonds purchased",
               backgroundColor: "#26A69A",
               borderColor: "#FFFFFF",
-              data: iter.map(e => e[1]),
+              data: got_data.map(e => e[1]),
             },
           ],
         },
@@ -170,13 +170,13 @@
       new Chart("total-bond-value", {
         type: "bar",
         data: {
-          labels: iter.map(e => e[0]),
+          labels: got_data.map(e => e[0]),
           datasets: [
             {
               label: "Total Bond Value (in Rupees)",
               backgroundColor: "#5C6BC0",
               borderColor: "#FFFFFF",
-              data: iter.map(e => e[1]),
+              data: got_data.map(e => e[1]),
             },
           ],
         },
