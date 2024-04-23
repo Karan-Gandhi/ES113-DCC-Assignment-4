@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      .main-container {
+        padding: 15px 30px;
+      }
+
+      .lead {
+        margin: auto 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">DCC Assignment 4</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/search">Search<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/company_purchases">Company Purchases</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/party_encashments">Party Encashments</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="">
+      <div class="main-container">
+        <h1>Search</h1>
+        <div>Please select the table and enter the columns you wanna search</div>
+      </div>
+
+      <div class="p-2">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              id="search-purchased-tab"
+              data-toggle="tab"
+              href="#search-purchased"
+              role="tab"
+              aria-controls="search-purchased"
+              aria-selected="true"
+              >Search Purchased</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="search-encashed-tab"
+              data-toggle="tab"
+              href="#search-encashed"
+              role="tab"
+              aria-controls="search-encashed"
+              aria-selected="false"
+              >Search Encashed</a
+            >
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div
+            class="tab-pane fade show active"
+            id="search-purchased"
+            role="tabpanel"
+            aria-labelledby="search-purchased-tab"
+          >
+            <div class="main-container">
+              <form
+                action="/search/purchased/result"
+                method="POST"
+                style="padding: 10px 0; display: flex; align-items: center; gap: 20px"
+              >
+                <input type="text" name="Field_val" placeholder="Search Query" />
+
+                <label class="lead">
+                  Fields :
+                  <select name="Fields_Purchased">
+                    <option value="Bond_Number">Bond Number</option>
+                    <option value="Name_of_the_Purchaser">Name of the Purchaser</option>
+                    <option value="Journal_Date">Journal Date</option>
+                    <option value="Date_of_Purchase">Date of Purchase</option>
+                    <option value="Date_of_Expiry">Date of Expiry</option>
+                    <option value="Issue_Branch_Code">Issue Branch Code</option>
+                    <option value="Issue_Teller">Issue Teller</option>
+                    <option value="Reference_No">Reference Number (URN)</option>
+                  </select>
+                </label>
+                <input type="submit" value="Submit" class="btn btn-dark" />
+              </form>
+              {%if result%}
+              <div class="table_display">
+                <table class="table table-striped">
+                  <thead>
+                    {%if table == "Encashed"%}
+                    <tr>
+                      <th scope="col">Sr.No</th>
+                      <th scope="col">Date of Encashment</th>
+                      <th scope="col">Name of Political Party</th>
+                      <th scope="col">Account number of Political Party</th>
+                      <th scope="col">Prefix</th>
+                      <th scope="col">Bond Number</th>
+                      <th scope="col">Denominations</th>
+                      <th scope="col">Pay Branch Code</th>
+                      <th scope="col">Pay Teller Code</th>
+                    </tr>
+                    {%else%}
+                    <tr>
+                      <th scope="col">Sr.No</th>
+                      <th scope="col">Reference Number (URN)</th>
+                      <th scope="col">Journal Date</th>
+                      <th scope="col">Date of Purchase</th>
+                      <th scope="col">Date of Expiry</th>
+                      <th scope="col">Name of the Purchaser</th>
+                      <th scope="col">Prefix</th>
+                      <th scope="col">Bond Number</th>
+                      <th scope="col">Denominations</th>
+                      <th scope="col">Issue Branch Code</th>
+                      <th scope="col">Isuue Teller</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                    {%endif%}
+                  </thead>
+
+                  <tbody>
+                    {% if result == "NA"%}
+                    <tr>
+                      <td colspan="12" style="text-align: center">No Data Found</td>
+                    </tr>
+                    {%else%} {% for item in result %}
+                    <tr>
+                      {% for cell in item %}
+                      <td>{{cell}}</td>
+                      {% endfor %}
+                    </tr>
+                    {% endfor %} {%endif%}
+                  </tbody>
+                </table>
+              </div>
+              {%endif%}
+            </div>
+          </div>
+          <div class="tab-pane fade" id="search-encashed" role="tabpanel" aria-labelledby="search-encashed-tab">
+            <div class="main-container">
+              <form
+                action="/search/encashed/result"
+                method="POST"
+                style="padding: 10px 0; display: flex; align-items: center; gap: 20px"
+              >
+                <input type="text" name="Field_val" placeholder="Search Query" />
+
+                <label class="lead">
+                  Fields :
+                  <select name="Fields_Encashed">
+                    <option value="Bond_Number">Bond Number</option>
+                    <option value="Name_of_the_Political_Party">Name of the political Party</option>
+                    <option value="Account_no_of_Political_Party">Account number of the political Party</option>
+                    <option value="Denominations">Denominations</option>
+                    <option value="Pay_Branch_Code">Pay Branch Code</option>
+                    <option value="Pay_Teller">Pay Teller</option>
+                    <option value="Date_of_Encashment">Date of Encashment</option>
+                  </select>
+                </label>
+                <input type="submit" value="Submit" class="btn btn-dark" />
+              </form>
+              {%if result%}
+              <div class="table_display">
+                <table class="table table-striped">
+                  <thead>
+                    {%if table == "Encashed"%}
+                    <tr>
+                      <th scope="col">Sr.No</th>
+                      <th scope="col">Date of Encashment</th>
+                      <th scope="col">Name of Political Party</th>
+                      <th scope="col">Account number of Political Party</th>
+                      <th scope="col">Prefix</th>
+                      <th scope="col">Bond Number</th>
+                      <th scope="col">Denominations</th>
+                      <th scope="col">Pay Branch Code</th>
+                      <th scope="col">Pay Teller Code</th>
+                    </tr>
+                    {%else%}
+                    <tr>
+                      <th scope="col">Sr.No</th>
+                      <th scope="col">Reference Number (URN)</th>
+                      <th scope="col">Journal Date</th>
+                      <th scope="col">Date of Purchase</th>
+                      <th scope="col">Date of Expiry</th>
+                      <th scope="col">Name of the Purchaser</th>
+                      <th scope="col">Prefix</th>
+                      <th scope="col">Bond Number</th>
+                      <th scope="col">Denominations</th>
+                      <th scope="col">Issue Branch Code</th>
+                      <th scope="col">Isuue Teller</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                    {%endif%}
+                  </thead>
+
+                  <tbody>
+                    {% if result == "NA"%}
+                    <tr>
+                      <td colspan="12" style="text-align: center">No Data Found</td>
+                    </tr>
+                    {%else%} {% for item in result %}
+                    <tr>
+                      {% for cell in item %}
+                      <td>{{cell}}</td>
+                      {% endfor %}
+                    </tr>
+                    {% endfor %} {%endif%}
+                  </tbody>
+                </table>
+              </div>
+              {%endif%}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
